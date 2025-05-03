@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MemoRush - Login</title>
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-bg: #1f2029;
+      --card-bg: #2a2b38;
+      --accent-color: #ffeba7;
+      --dark-accent: #102770;
+      --text-color: #c4c3ca;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--primary-bg);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 440px;
+      text-align: center;
+    }
+
+    .auth-tabs {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .auth-tabs span {
+      padding: 0 20px;
+      text-transform: uppercase;
+      font-weight: 700;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .auth-tabs span.active {
+      color: var(--accent-color);
+    }
+
+    .toggle-container {
+      margin: 10px auto;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 16px;
+      background-color: var(--accent-color);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .toggle-switch:before {
+      content: '';
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      background-color: var(--dark-accent);
+      border-radius: 50%;
+      top: -10px;
+      left: -10px;
+      transition: transform 0.4s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-color);
+      font-family: "unicons";
+      content: "\eb4f";
+      font-size: 24px;
+    }
+
+    #reg-log {
+      display: none;
+    }
+
+    #reg-log:checked ~ .toggle-container .toggle-switch:before {
+      transform: translateX(44px) rotate(-270deg);
+    }
+
+    .card-container {
+      position: relative;
+      height: 460px;
+      margin-top: 30px;
+      perspective: 1000px;
+    }
+
+    .auth-card {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: var(--card-bg);
+      background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/1462889/pat.svg");
+      background-position: bottom center;
+      background-repeat: no-repeat;
+      background-size: 300%;
+      border-radius: 6px;
+      padding: 30px;
+      backface-visibility: hidden;
+      transition: transform 0.6s;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    .login-card {
+      transform: rotateY(0deg);
+      z-index: 2;
+    }
+
+    .signup-card {
+      transform: rotateY(180deg);
+    }
+
+    #reg-log:checked ~ .card-container .login-card {
+      transform: rotateY(-180deg);
+    }
+
+    #reg-log:checked ~ .card-container .signup-card {
+      transform: rotateY(0deg);
+    }
+
+    .form-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .form-style {
+      width: 100%;
+      padding: 13px 20px 13px 55px;
+      background-color: var(--primary-bg);
+      color: var(--text-color);
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      box-shadow: 0 4px 8px rgba(21,21,21,0.2);
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent-color);
+      font-size: 24px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--accent-color);
+      color: var(--dark-accent);
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: var(--dark-accent);
+      color: var(--accent-color);
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+
+    .social-login {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .social-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary-bg);
+      color: var(--text-color);
+      transition: all 0.3s ease;
+    }
+
+    .social-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 576px) {
+      .auth-card {
+        padding: 20px;
+      }
+      
+      .auth-tabs span {
+        padding: 0 15px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <h6 class="auth-tabs">
+      <span class="active" id="login-tab">Log In</span>
+      <span id="signup-tab">Sign Up</span>
+    </h6>
+    
+    <input type="checkbox" id="reg-log" class="checkbox">
+    <div class="toggle-container">
+      <label for="reg-log" class="toggle-switch"></label>
+    </div>
+    
+    <div class="card-container">
+      <!-- Login Card (front) -->
+      <div class="auth-card login-card">
+        <h4>Log In</h4>
+        <form id="loginForm">
+          <div class="form-group">
+            <input type="email" class="form-style" placeholder="Your Email" required>
+            <i class="input-icon uil uil-at"></i>
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-style" placeholder="Your Password" required>
+            <i class="input-icon uil uil-lock-alt"></i>
+            <i class="uil uil-eye password-toggle"></i>
+          </div>
+          <button type="submit" class="btn">Login</button>
+          <div class="social-login">
+            <a href="#" class="social-btn"><i class="uil uil-google"></i></a>
+            <a href="#" class="social-btn"><i class="uil uil-facebook-f"></i></a>
+            <a href="#" class="social-btn"><i class="uil uil-twitter-alt"></i></a>
+          </div>
+          <p>
+            <a href="#" class="link">Forgot your password?</a>
+          </p>
+        </form>
+      </div>
+      
+      <!-- Signup Card (back) -->
+      <div class="auth-card signup-card">
+        <h4>Sign Up</h4>
+        <form id="signupForm">
+          <div class="form-group">
+            <input type="text" class="form-style" placeholder="Your Full Name" required>
+            <i class="input-icon uil uil-user"></i>
+          </div>
+          <div class="form-group">
+            <input type="email" class="form-style" placeholder="Your Email" required>
+            <i class="input-icon uil uil-at"></i>
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-style" placeholder="Your Password" required>
+            <i class="input-icon uil uil-lock-alt"></i>
+            <i class="uil uil-eye password-toggle"></i>
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-style" placeholder="Confirm Password" required>
+            <i class="input-icon uil uil-lock-alt"></i>
+          </div>
+          <button type="submit" class="btn">Register</button>
+          <p>
+            <a href="#" class="link" id="switch-to-login">Already have an account?</a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM elements
+      const checkbox = document.getElementById('reg-log');
+      const loginTab = document.getElementById('login-tab');
+      const signupTab = document.getElementById('signup-tab');
+      const switchToLogin = document.getElementById('switch-to-login');
+      const loginForm = document.getElementById('loginForm'); // make sure loginForm has an id
+
+      // Toggle password visibility
+      document.querySelectorAll('.password-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function() {
+          const input = this.parentElement.querySelector('input');
+          const type = input.type === 'password' ? 'text' : 'password';
+          input.type = type;
+          this.classList.toggle('uil-eye');
+          this.classList.toggle('uil-eye-slash');
+        });
+      });
+
+      // Update tabs and checkbox state
+      function updateView(isLogin) {
+        if (isLogin) {
+          loginTab.classList.add('active');
+          signupTab.classList.remove('active');
+          checkbox.checked = false;
+        } else {
+          loginTab.classList.remove('active');
+          signupTab.classList.add('active');
+          checkbox.checked = true;
+        }
+      }
+
+      // Tab click handlers
+      loginTab.addEventListener('click', function(e) {
+        e.preventDefault();
+        updateView(true);
+      });
+      
+      signupTab.addEventListener('click', function(e) {
+        e.preventDefault();
+        updateView(false);
+      });
+
+      // "Already have an account" link
+      switchToLogin.addEventListener('click', function(e) {
+        e.preventDefault();
+        updateView(true);
+      });
+
+      // Checkbox change handler (for the toggle switch)
+      checkbox.addEventListener('change', function() {
+        if (this.checked) {
+          loginTab.classList.remove('active');
+          signupTab.classList.add('active');
+        } else {
+          loginTab.classList.add('active');
+          signupTab.classList.remove('active');
+        }
+      });
+      
+      // NEW: Handle login form submission; redirect to index.html
+      loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Perform validation/authentication here.
+        const emailInput = loginForm.querySelector('input[type="email"]');
+        const passwordInput = loginForm.querySelector('input[type="password"]');
+        if (emailInput.value.trim() === "" || passwordInput.value.trim() === "") {
+          alert("Please enter both email and password.");
+          return;
+        }
+        // Additional validation can be added here (e.g., email format)
+        // On successful login, redirect to index.html
+        window.location.href = "index.html";
+      });
+    });
+  </script>
+</body>
+</html>
