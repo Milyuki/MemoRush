@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MemoRush</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background-color: #1f2029; /* primary background from login */
+      font-family: 'Poppins', sans-serif; /* using Poppins as in login */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+      flex-direction: column;
+      color: #c4c3ca; /* text color from login */
+    }
+    .container {
+      max-width: 320px;
+      width: 100%;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      gap: 0.5rem;
+    }
+    .close-btn, .reset-btn, .tally-toggle-btn, .tally-close-btn {
+      cursor: pointer;
+      user-select: none;
+      background: none;
+      border: none;
+      padding: 0;
+      line-height: 1;
+      font-weight: 700;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .close-btn {
+      font-size: 1.875rem;
+      text-align: right;
+      width: 2.5rem;
+      color: #c4c3ca;
+    }
+    .reset-btn {
+      font-size: 1rem;
+      padding: 0.25rem 0.75rem;
+      border: 2px solid #1f2029;
+      border-radius: 0.25rem;
+      background-color: #ffeba7; 
+      color: #102770;
+      flex-shrink: 0;
+    }
+    .reset-btn:hover,
+    .reset-btn:focus {
+      background-color: #102770;
+      border-color: #102770;
+      color: #ffeba7;
+      outline: none;
+    }
+    .tally-toggle-btn {
+      font-size: 1.5rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.25rem;
+      border: 2px solid #1f2029;
+      flex-shrink: 0;
+    }
+    .tally-toggle-btn:hover,
+    .tally-toggle-btn:focus {
+      background-color: #102770;
+      border-color: #102770;
+      outline: none;
+    }
+    .timer, .moves {
+      color: #c4c3ca;
+      font-weight: 700;
+      font-size: 1.875rem;
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
+    .card {
+      background-color: #102770; /* dark background for hidden card */
+      border-radius: 0.25rem;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      cursor: pointer;
+      user-select: none;
+      color: transparent;
+      transition: color 0.3s ease, background-color 0.3s ease;
+      border: 2px solid transparent;
+    }
+    .card.revealed {
+      background-color: #ffeba7; /* accent when revealed */
+      color: #102770;
+      cursor: default;
+    }
+    .card.matched {
+      background-color: #7a73d1;
+      color: #c4c3ca;
+      cursor: default;
+      border-color: #7a73d1;
+    }
+    .message {
+      color: #c4c3ca;
+      font-weight: 700;
+      font-size: 1.25rem;
+      text-align: center;
+      margin-top: 1.5rem;
+      user-select: none;
+      min-height: 1.5rem;
+    }
+    .difficulty-select {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .difficulty-select button {
+      background-color: #1f2029;
+      border: none;
+      border-radius: 0.25rem;
+      color: #c4c3ca;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+    .difficulty-select button:hover,
+    .difficulty-select button:focus {
+      background-color: #102770;
+      outline: none;
+    }
+    .difficulty-select button.active {
+      background-color: #7a73d1;
+      cursor: default;
+    }
+    .theme-selector {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .theme-selector button {
+      background-color: #1f2029;
+      border: none;
+      border-radius: 0.25rem;
+      color: #c4c3ca;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+    .theme-selector button:hover,
+    .theme-selector button:focus {
+      background-color: #102770;
+      outline: none;
+    }
+    .theme-selector button.active {
+      background-color: #7a73d1;
+      cursor: default;
+    }
+    .tally-board {
+      margin-top: 2rem;
+      background-color: #1a1b23;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      max-width: 320px;
+      width: 100%;
+      color: #c4c3ca;
+      user-select: none;
+      display: none;
+      position: relative;
+    }
+    .tally-board.visible {
+      display: block;
+    }
+    .tally-board h2 {
+      margin: 0 0 0.75rem 0;
+      font-weight: 700;
+      font-size: 1.25rem;
+      text-align: center;
+    }
+    .tally-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 1rem;
+    }
+    .tally-list li {
+      padding: 0.25rem 0;
+      border-bottom: 1px solid #1f2029;
+      display: flex;
+      justify-content: space-between;
+    }
+    .tally-list li:last-child {
+      border-bottom: none;
+    }
+    .tally-rank {
+      font-weight: 700;
+      width: 1.5rem;
+    }
+    .tally-time {
+      font-family: monospace;
+    }
+    .tally-close-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      font-size: 1.5rem;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.25rem;
+      border: 2px solid #1f2029;
+      background: none;
+      color: #c4c3ca;
+      cursor: pointer;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tally-close-btn:hover,
+    .tally-close-btn:focus {
+      background-color: #102770;
+      border-color: #102770;
+      outline: none;
+    }
+    .hints {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+      background-color: #102770;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main" aria-label="Memory game container">
+    <div class="top-bar">
+      <button class="reset-btn" id="resetBtn" aria-label="Reset game">Reset</button>
+      <button class="tally-toggle-btn" id="tallyToggleBtn" aria-label="Toggle tally board" title="Toggle tally board" aria-pressed="false" role="button" tabindex="0">
+        <img src="C:\Users\HP\Desktop\project\tropy.png" alt="Trophy Icon" width="20" height="20" />
+      </button>
+      <button class="close-btn" id="closeBtn" aria-label="Close button" role="button" tabindex="0">&times;</button>
+    </div>
+
+    <div class="difficulty-select" role="radiogroup" aria-label="Select difficulty level">
+      <button type="button" role="radio" aria-checked="true" tabindex="0" class="active" data-level="easy" id="diffEasy">Easy</button>
+      <button type="button" role="radio" aria-checked="false" tabindex="-1" data-level="medium" id="diffMedium">Medium</button>
+      <button type="button" role="radio" aria-checked="false" tabindex="-1" data-level="hard" id="diffHard">Hard</button>
+    </div>
+
+    <div class="theme-selector" role="radiogroup" aria-label="Select theme">
+      <button type="button" role="radio" aria-checked="true" tabindex="0" class="active" data-theme="numbers" id="themeNumbers">Numbers</button>
+      <button type="button" role="radio" aria-checked="false" tabindex="-1" data-theme="letters" id="themeLetters">Letters</button>
+      <button type="button" role="radio" aria-checked="false" tabindex="-1" data-theme="emoji" id="themeEmoji">Emoji</button>
+      <button type="button" role="radio" aria-checked="false" tabindex="-1" data-theme="animals" id="themeAnimals">Animals</button>
+    </div>
+
+    <div class="timer" id="timer" aria-live="polite" aria-atomic="true">0.0s</div>
+    <div class="moves" id="moves" aria-live="polite" aria-atomic="true">Moves: 0</div>
+    <div class="grid" id="gameGrid" role="grid" aria-label="Memory game grid" aria-live="polite" aria-atomic="true">
+      <!-- Cards inserted by JS -->
+    </div>
+    <div class="message" id="message" role="alert" aria-live="assertive"></div>
+  </div>
+
+  <section class="tally-board" id="tallyBoard" aria-label="Top 5 fastest times per difficulty" aria-hidden="true" tabindex="-1">
+    <button class="tally-close-btn" id="tallyCloseBtn" aria-label="Close tally board">&times;</button>
+    <h2>Top 5 Fastest Times</h2>
+    <div id="tallyEasy" class="tally-section" aria-live="polite" aria-atomic="true">
+      <h3>Easy</h3>
+      <ul class="tally-list" id="listEasy"></ul>
+    </div>
+    <div id="tallyMedium" class="tally-section" aria-live="polite" aria-atomic="true" style="margin-top:1rem;">
+      <h3>Medium</h3>
+      <ul class="tally-list" id="listMedium"></ul>
+    </div>
+    <div id="tallyHard" class="tally-section" aria-live="polite" aria-atomic="true" style="margin-top:1rem;">
+      <h3>Hard</h3>
+      <ul class="tally-list" id="listHard"></ul>
+    </div>
+  </section>
+
+  <div class="controls">
+    <button id="hintBtn" aria-label="Hint button">Hint (3)</button>
+  </div>
+
+  <div class="win-message" id="winMessage" role="alert" aria-live="assertive" aria-atomic="true" style="display:none;">
+    <h2>Congratulations!</h2>
+    <p>You won in <span id="finalMoves">0</span> moves and <span id="finalTime">0.0</span> seconds!</p>
+    <button id="playAgainBtn">Play Again</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
